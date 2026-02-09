@@ -69,9 +69,18 @@ def monitor_performance():
 
 # Populate the operation queue with mixed 'set' and 'get' requests
 for i in range(NUM_THREADS * OPS_PER_THREAD):
-    op_type = 'get' if i % 2 else 'set'
+    # this code wasn't working. it sets all evens and gets all odds?
+    # op_type = 'get' if i % 2 else 'set'
+    # key = f"key_{i}"
+    # value = f"value_{i}" if op_type == 'set' else None
+    # operations_queue.put((op_type, key, value))
+
+    op_type = 'set'
     key = f"key_{i}"
-    value = f"value_{i}" if op_type == 'set' else None
+    value = f"value_{i}"
+    operations_queue.put((op_type, key, value))
+
+    op_type = 'get'
     operations_queue.put((op_type, key, value))
 
 # Create and start worker threads

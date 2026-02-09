@@ -71,6 +71,7 @@ func (s *storeType) del(key string) {
 }
 
 // External public facing get/put/del functions
+// Denoted as public because they start with a capital letter
 
 func Get(key string) (string, error) {
 	return store.get(key)
