@@ -1,8 +1,8 @@
 # KV-Store
 
-To run the server, run the command `go run cmd/kv-store/main.go`. If you want a slightly higher performance version, run `go build cmd/kv-store/main.go` and then `./main`. The compiler will do some magic to make it like ~5% faster
+To run the server, run the command `make server`. If you want a slightly higher performance version, run `make build` and then `./server`. The compiler will do some magic to make it like ~5% faster
 
-To test, make sure the server is running and then run `python3 test/benchmark.py`
+To test, make sure the server is running and then run `make test`
 
 ### Future work
 * Operate on TCP instead of HTTP for faster performance
