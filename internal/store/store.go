@@ -26,7 +26,7 @@ func init() {
 // functions to help with locking (distribute load over NUM_LOCKS locks for quicker access times)
 func basicHash(key string) int {
 	out := 1
-	for i := range len(key) {
+	for i := 0; i < len(key); i++ {
 		out *= int(key[i])
 	}
 	return out % NUM_LOCKS
