@@ -1,6 +1,8 @@
 RUN_DIR=./cmd/kv-store
 TARGET=server
 
+.PHONY: test
+
 server:
 	go run ${RUN_DIR}/main.go
 
