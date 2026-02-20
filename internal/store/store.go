@@ -1,11 +1,16 @@
 package store
 
 import (
+	"encoding/gob"
 	"fmt"
+	"os"
 	"sync"
+	"time"
 )
 
 const NUM_LOCKS = 11
+const SAVE_INTERVAL = 5 * time.Second
+const SAVE_FILE_PATH = "internal/store/save.gob"
 
 type lockTable []sync.Mutex
 type storeType struct {
@@ -26,6 +31,16 @@ func init() {
 		store:     storeTable,
 		lockTable: make([]sync.Mutex, NUM_LOCKS),
 	}
+
+	// start background goroutine to periodically save the store
+	ticker := time.NewTicker(SAVE_INTERVAL)
+	go func() {
+		for range ticker.C {
+			if err := store.save(); err != nil {
+				fmt.Fprintf(os.Stderr, "warning: periodic save failed: %v\n", err)
+			}
+		}
+	}()
 }
 
 // functions to help with locking (distribute load over NUM_LOCKS locks for quicker access times)
@@ -80,6 +95,29 @@ func (s *storeType) del(key string) {
 	defer s.lockTable.unlock(key)
 
 	delete(s.store[hash], key)
+}
+
+// save serializes the store to disk using gob encoding.
+// All shard locks are held during serialization to ensure a consistent snapshot.
+func (s *storeType) save() error {
+	// lock all shards in index order to get a consistent snapshot
+	for i := range s.lockTable {
+		s.lockTable[i].Lock()
+	}
+	defer func() {
+		for i := range s.lockTable {
+			s.lockTable[i].Unlock()
+		}
+	}()
+
+	f, err := os.Create(SAVE_FILE_PATH)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	fmt.Printf("Saving store to disk at %s\n", SAVE_FILE_PATH)
+	return gob.NewEncoder(f).Encode(s.store)
 }
 
 // External public facing get/put/del functions
