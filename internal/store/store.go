@@ -32,12 +32,27 @@ func init() {
 		lockTable: make([]sync.Mutex, NUM_LOCKS),
 	}
 
+	// attempt to load existing store from disk
+	f, err := os.Open(SAVE_FILE_PATH)
+	if err == nil {
+		defer f.Close()
+		if err := gob.NewDecoder(f).Decode(&store.store); err != nil {
+			fmt.Fprintf(os.Stderr, "warning: failed to load store from disk: %v\n", err)
+		} else {
+			fmt.Printf("Loaded store from disk at %s\n", SAVE_FILE_PATH)
+		}
+	} else {
+		fmt.Printf("No existing data found, starting with empty store\n")
+	}
+
 	// start background goroutine to periodically save the store
 	ticker := time.NewTicker(SAVE_INTERVAL)
 	go func() {
 		for range ticker.C {
 			if err := store.save(); err != nil {
 				fmt.Fprintf(os.Stderr, "warning: periodic save failed: %v\n", err)
+			} else {
+				fmt.Printf("Periodic save successful at %s\n", time.Now().Format(time.RFC3339))
 			}
 		}
 	}()
