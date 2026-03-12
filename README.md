@@ -6,6 +6,19 @@ To test, make sure the server is running and then run `make test`
 
 > **Note**: The first time the benchmark is run, there will be many key errors due to the multi-threaded nature of the test. This is expected and should not happen if the test is rerun or if the server is restarted with the persistent saving file populated.
 
+### Start with Docker
+
+```bash
+# Build the image
+docker build -t kv-store .
+
+# Run the container
+docker run -p 3000:3000 kv-store
+```
+
+The server will be available at `http://localhost:3000`.
+
+
 ### Future work
 * Operate on TCP instead of HTTP for faster performance
   * Requires more manual request parsing
