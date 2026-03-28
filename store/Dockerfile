@@ -8,13 +8,13 @@ RUN go mod download
 COPY store/cmd/ ./store/cmd/
 COPY store/internal/ ./store/internal/
 
-RUN go build -o server ./store/cmd/main.go
+RUN go build -o /app/bin/server ./store/cmd/main.go
 
 FROM alpine:3.21
 
 WORKDIR /app
 
-COPY --from=builder /app/server .
+COPY --from=builder /app/bin/server /app/server
 
 RUN mkdir -p /app/data
 

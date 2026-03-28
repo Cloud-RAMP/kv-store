@@ -39,8 +39,8 @@ services:
       context: .
       dockerfile: router/Dockerfile
     environment:
-      - KV_NODES=http://kv1:3000,http://kv2:3000,http://kv3:3000
-      - ROUTER_ADDR=:3000
+      - KV_NODES=${KV_NODES}
+      - ROUTER_ADDR=${ROUTER_ADDR}
     depends_on:
       - kv1
       - kv2

@@ -8,7 +8,7 @@ To run the python test, make sure the server is running and then run `make test`
 
 > **Note**: The first time the benchmark is run, there will be many key errors due to the multi-threaded nature of the test. This is expected and should not happen if the test is rerun or if the server is restarted with the persistent saving file populated.
 
-### Start with Docker
+### Start with Docker (Single Node)
 
 ```bash
 # Build the image
@@ -19,6 +19,25 @@ docker run -p 3000:3000 kv-store
 ```
 
 The server will be available at `http://localhost:3000`.
+
+### Start multi node system with router (docker compose)
+
+```bash
+docker compose up
+```
+
+This will start all three nodes with the router.
+
+To start the system with all three stores, but to start with only select nodes, you can run the following command:
+
+```bash
+# one node
+KV_NODES=http://kv1:3000 docker compose up
+
+# two nodes
+KV_NODES=http://kv1:3000,http://kv2:3000 docker compose up
+```
+
 
 ## System Design
 
