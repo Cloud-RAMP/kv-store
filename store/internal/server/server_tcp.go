@@ -8,7 +8,7 @@ package server
 // 	"fmt"
 // 	"net"
 
-// 	"github.com/Cloud-RAMP/kv-store/internal/store"
+// 	"github.com/Cloud-RAMP/kv-store/store/internal/store"
 // )
 
 // // need to make proper HTTP responses later
@@ -98,6 +98,3 @@ package server
 // }
 
 // func handleDel(conn net.Conn, reader *bufio.Reader) {
-// 	fmt.Println("handling del")
-
-// }

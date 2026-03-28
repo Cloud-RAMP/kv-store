@@ -10,7 +10,9 @@ import (
 
 const NUM_LOCKS = 11
 const SAVE_INTERVAL = 5 * time.Second
-const SAVE_FILE_PATH = "internal/store/save.gob"
+const defaultSaveFilePath = "save.gob"
+
+var SAVE_FILE_PATH = defaultSaveFilePath
 
 type lockTable []sync.Mutex
 type storeType struct {
@@ -22,6 +24,10 @@ var store storeType
 
 // runs on project initialization
 func init() {
+	if envPath := os.Getenv("SAVE_FILE_PATH"); envPath != "" {
+		SAVE_FILE_PATH = envPath
+	}
+
 	storeTable := make([]map[string]string, NUM_LOCKS)
 	for i := range storeTable {
 		storeTable[i] = make(map[string]string)

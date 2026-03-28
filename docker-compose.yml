@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  kv1:
+    build:
+      context: .
+      dockerfile: store/Dockerfile
+    environment:
+      - SAVE_FILE_PATH=/app/data/save.gob
+    volumes:
+      - kv1_data:/app/data
+    expose:
+      - "3000"
+
+  kv2:
+    build:
+      context: .
+      dockerfile: store/Dockerfile
+    environment:
+      - SAVE_FILE_PATH=/app/data/save.gob
+    volumes:
+      - kv2_data:/app/data
+    expose:
+      - "3000"
+
+  kv3:
+    build:
+      context: .
+      dockerfile: store/Dockerfile
+    environment:
+      - SAVE_FILE_PATH=/app/data/save.gob
+    volumes:
+      - kv3_data:/app/data
+    expose:
+      - "3000"
+
+  router:
+    build:
+      context: .
+      dockerfile: router/Dockerfile
+    environment:
+      - KV_NODES=http://kv1:3000,http://kv2:3000,http://kv3:3000
+      - ROUTER_ADDR=:3000
+    depends_on:
+      - kv1
+      - kv2
+      - kv3
+    ports:
+      - "3000:3000"
+
+volumes:
+  kv1_data:
+  kv2_data:
+  kv3_data:

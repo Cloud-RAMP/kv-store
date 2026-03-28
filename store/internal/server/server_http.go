@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	"github.com/Cloud-RAMP/kv-store/internal/store"
+	"github.com/Cloud-RAMP/kv-store/store/internal/store"
 )
 
 func Start(address string) error {

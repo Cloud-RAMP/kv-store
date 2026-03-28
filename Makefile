@@ -1,4 +1,4 @@
-RUN_DIR=./cmd/kv-store
+RUN_DIR=./store/cmd
 TARGET=server
 
 .PHONY: test server build clean
@@ -13,4 +13,4 @@ build:
 	go build -o ${TARGET} ${RUN_DIR}/main.go
 
 clean:
-	rm internal/store/save.gob
+	rm -f save.gob
