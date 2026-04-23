@@ -1,7 +1,6 @@
 package router
 
 import (
-	"bytes"
 	"fmt"
 	"hash/fnv"
 	"io"
@@ -57,7 +56,7 @@ type Router struct {
 }
 
 func (r *Router) handle(w http.ResponseWriter, req *http.Request) {
-	key := strings.TrimPrefix(req.URL.Path, "/")
+	key := req.URL.Path[1:]
 	if key == "" {
 		http.Error(w, "key required in path", http.StatusBadRequest)
 		return
@@ -69,14 +68,7 @@ func (r *Router) handle(w http.ResponseWriter, req *http.Request) {
 		targetURL += "?" + req.URL.RawQuery
 	}
 
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		http.Error(w, "failed to read request body", http.StatusBadRequest)
-		return
-	}
-	defer req.Body.Close()
-
-	upstreamReq, err := http.NewRequest(req.Method, targetURL, bytes.NewReader(body))
+	upstreamReq, err := http.NewRequest(req.Method, targetURL, req.Body)
 	if err != nil {
 		http.Error(w, "failed to build upstream request", http.StatusInternalServerError)
 		return

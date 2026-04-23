@@ -9,7 +9,7 @@ import (
 )
 
 const NUM_LOCKS = 11
-const SAVE_INTERVAL = 5 * time.Second
+const SAVE_INTERVAL = 10 * time.Second
 const defaultSaveFilePath = "save.gob"
 
 var SAVE_FILE_PATH = defaultSaveFilePath

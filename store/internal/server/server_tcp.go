@@ -1,18 +1,13 @@
 package server
 
-// this was a work in progress. it would be really fast but hard to parse headers, etc.
-// could work on this later
-
 // import (
 // 	"bufio"
 // 	"fmt"
 // 	"net"
+// 	"strings"
 
 // 	"github.com/Cloud-RAMP/kv-store/store/internal/store"
 // )
-
-// // need to make proper HTTP responses later
-// // could do the whole server in HTTP, but slower
 
 // func Start(address string) error {
 // 	listener, err := net.Listen("tcp", address)
@@ -22,7 +17,6 @@ package server
 // 	defer listener.Close()
 // 	fmt.Println("Server listening on", address)
 
-// 	// infinite loop, handle connections
 // 	for {
 // 		conn, err := listener.Accept()
 // 		if err != nil {
@@ -30,7 +24,6 @@ package server
 // 			continue
 // 		}
 
-// 		// spawn a new user-level thread process to handle the connection
 // 		go handleConnection(conn)
 // 	}
 // }
@@ -39,62 +32,54 @@ package server
 // 	defer conn.Close()
 
 // 	reader := bufio.NewReader(conn)
-// 	method, err := reader.ReadString(' ')
+// 	line, err := reader.ReadString('\n')
 // 	if err != nil {
-// 		fmt.Printf("handle error later here")
+// 		conn.Write([]byte("ERROR: failed to read request\n"))
 // 		return
 // 	}
 
-// 	// cut off trailing space
-// 	method = method[:len(method)-1]
-// 	fmt.Println("New request:", method)
+// 	// Parse the line: METHOD key [value]
+// 	parts := strings.Fields(strings.TrimSpace(line))
+// 	if len(parts) < 2 {
+// 		conn.Write([]byte("ERROR: invalid format\n"))
+// 		return
+// 	}
 
-// 	// operate according to request method
+// 	method := parts[0]
+// 	key := parts[1]
+
 // 	switch method {
 // 	case "GET":
-// 		handleGet(conn, reader)
-// 		return
+// 		handleGet(conn, key)
 // 	case "POST":
-// 		handlePut(conn, reader)
-// 		return
-// 	case "DEL":
-// 		handleDel(conn, reader)
-// 		return
+// 		if len(parts) < 3 {
+// 			conn.Write([]byte("ERROR: POST requires key and value\n"))
+// 			return
+// 		}
+// 		value := parts[2]
+// 		handlePut(conn, key, value)
+// 	case "DELETE":
+// 		handleDel(conn, key)
+// 	default:
+// 		conn.Write([]byte("ERROR: invalid method\n"))
 // 	}
-
-// 	conn.Write([]byte("some proper http response here for invalid method"))
 // }
 
-// func handleGet(conn net.Conn, reader *bufio.Reader) {
-// 	key, err := reader.ReadString(' ')
-// 	if err != nil {
-// 		conn.Write([]byte("http 500 error"))
-// 		return
-// 	}
-
-// 	// this could fail on empty key but it's fast
-// 	key = key[:len(key)-1][1:]
-// 	fmt.Println("requested key:", key)
-
+// func handleGet(conn net.Conn, key string) {
 // 	val, err := store.Get(key)
 // 	if err != nil {
-// 		conn.Write([]byte("i think 404 error here? not sure"))
+// 		conn.Write([]byte("ERROR: key not found\n"))
 // 		return
 // 	}
-
-// 	conn.Write([]byte(val))
+// 	conn.Write([]byte(val + "\n"))
 // }
 
-// func handlePut(conn net.Conn, reader *bufio.Reader) {
-// 	key, err := reader.ReadString(' ')
-// 	if err != nil {
-// 		conn.Write([]byte("http 500 error"))
-// 		return
-// 	}
-
-// 	// this could fail on empty key but it's fast
-// 	key = key[:len(key)-1][1:]
-// 	fmt.Println("requested key:", key)
+// func handlePut(conn net.Conn, key string, value string) {
+// 	store.Put(key, value)
+// 	conn.Write([]byte("OK\n"))
 // }
 
-// func handleDel(conn net.Conn, reader *bufio.Reader) {
+// func handleDel(conn net.Conn, key string) {
+// 	store.Del(key)
+// 	conn.Write([]byte("OK\n"))
+// }

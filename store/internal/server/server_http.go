@@ -9,9 +9,26 @@ import (
 	"github.com/Cloud-RAMP/kv-store/store/internal/store"
 )
 
+type logEntry struct {
+	method  string
+	key     string
+	success bool
+	time    time.Time
+}
+
+var logChan chan logEntry = make(chan logEntry, 500)
+
 func Start(address string) error {
 	http.HandleFunc("/", handler)
 	fmt.Println("Server listening on", address)
+
+	// dedicated logging chan
+	go func() {
+		for log := range logChan {
+			fmt.Printf("Method:%s Key:%s Success:%t Time:%s\n", log.method, log.key, log.success, log.time.Format("2006-01-02 15:04:05"))
+		}
+	}()
+
 	return http.ListenAndServe(address, nil)
 }
 
@@ -63,5 +80,10 @@ func handleDel(w http.ResponseWriter, key string) {
 }
 
 func logRequest(success bool, method string, key string) {
-	fmt.Printf("Method:%s Key:%s Success:%t Time:%s\n", method, key, success, time.Now().Format("2006-01-02 15:04:05"))
+	logChan <- logEntry{
+		method:  method,
+		key:     key,
+		success: success,
+		time:    time.Now(),
+	}
 }
