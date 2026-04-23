@@ -47,7 +47,6 @@ type Metrics struct {
 
 const SERVER_URL string = "http://localhost:3000"
 const NUM_WORKERS = 5
-const TOTAL_REQUESTS = 1000
 
 // BenchmarkKVStore benchmarks the KV store with multiple workers
 func BenchmarkKVStore(b *testing.B) {

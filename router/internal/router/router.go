@@ -34,13 +34,15 @@ func ParseNodes(raw string) ([]string, error) {
 		return nil, fmt.Errorf("no backend nodes configured")
 	}
 
+	fmt.Println(nodes)
+
 	return nodes, nil
 }
 
 // Start runs the hash-based routing HTTP server.
 func Start(address string, nodes []string) error {
 	r := &Router{
-		nodes: nodes,
+		nodes:  nodes,
 		client: &http.Client{Timeout: defaultTimeout},
 	}
 
