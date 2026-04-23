@@ -96,7 +96,7 @@ func BenchmarkKVStore(b *testing.B) {
 
 	b.ReportMetric(float64(metrics.success)/totalTime.Seconds(), "req/sec")
 	b.ReportMetric(float64(metrics.success)/float64(b.N)*100, "success%")
-	b.ReportMetric(float64(metrics.duration.Microseconds())/float64(metrics.success), "us/req")
+	b.ReportMetric(float64(metrics.duration.Milliseconds())/float64(metrics.success), "ms/req")
 
 	// b.N*2 becuase we send 2 requests / benchmark
 	b.Logf("Total requests: %d, Success: %d, Failures: %d, Time: %v",
@@ -152,6 +152,7 @@ func worker(b *testing.B, tasks <-chan RequestTask, metrics *Metrics) {
 		resp, err := client.Do(req)
 		if err != nil {
 			b.Logf("Failed to send request: %v", err)
+			b.Logf("Key: %s", task.key)
 			metrics.mu.Lock()
 			metrics.failure++
 			metrics.mu.Unlock()
