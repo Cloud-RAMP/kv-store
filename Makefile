@@ -18,7 +18,7 @@ stop:
 	lsof -ti :3000 -ti :3001 -ti :3002 -ti :3003 | xargs kill -9
 
 bench:
-	go test -bench=BenchmarkKVStore -benchmem ./test
+	go test -bench=^BenchmarkKVStore$$ -benchmem -run=^$$ ./test
 
 bench-python:
 	python3 test/benchmark.py

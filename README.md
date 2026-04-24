@@ -1,6 +1,31 @@
 # KV-Store
 
-## Running the System
+### For testing
+
+In order to test our KV store, you must have go (>=1.24) installed on your system.
+
+There are two things that need to be run: the server/storage nodes, and the benchmark. To start the server, simply run `make`, which will build the binaries, and create the `output` directory to store server and store outputs. Once the server is running, you will have the following services on your ports:
+```
+3000: router
+3001: store 1
+3002: store 2
+3003: store 3
+```
+Since these services are run in the background, you need to run `make stop` to stop them and clear your ports.
+
+To run our go benchmark, run the following command:
+```bash
+URL={YOUR_URL} make bench
+```
+
+For example, in testing we ran the following command to test the store from an external machine:
+```bash
+URL=http://10.0.0.152:3000 make bench
+```
+
+To run the python benchmark from the first assignment, run `make bench-python` instead of `make bench`, although the go-based benchmark is able to send more requests in parallel.
+
+<!-- ## Running the System
 
 To run the server, fist make sure that go is installed on your system. Our KV store runs on go 1.24, so make sure you download that version or one later. To start the server, run the command `make server`. If you want a slightly higher performance version, run `make build` and then `./server`. The compiler will do some magic to make it like ~5% faster
 
@@ -36,7 +61,7 @@ KV_NODES=http://kv1:3000 docker compose up
 
 # two nodes
 KV_NODES=http://kv1:3000,http://kv2:3000 docker compose up
-```
+``` -->
 
 
 ## System Design

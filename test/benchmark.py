@@ -5,9 +5,10 @@ import queue
 import requests
 import time
 import random
+import os
 
 # The base URL of the Flask server
-BASE_URL = 'http://127.0.0.1:3000'
+BASE_URL = os.environ.get('URL', 'http://127.0.0.1:3000')
 
 # Configure the number of threads and operations
 NUM_THREADS = 3

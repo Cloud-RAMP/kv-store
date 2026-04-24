@@ -54,8 +54,8 @@ func init() {
 	}
 }
 
-const NUM_WORKERS = 5
-const NUM_KEYS = 1000
+const NUM_WORKERS = 10
+const NUM_KEYS = 100
 
 // BenchmarkKVStore benchmarks the KV store with multiple workers
 func BenchmarkKVStore(b *testing.B) {
@@ -105,7 +105,7 @@ func BenchmarkKVStore(b *testing.B) {
 
 	b.ReportMetric(float64(metrics.success)/totalTime.Seconds(), "req/sec")
 	b.ReportMetric(float64(metrics.duration.Milliseconds())/float64(metrics.success), "ms/req")
-	b.ReportMetric(float64(metrics.success)/float64(b.N)*100, "success%")
+	b.ReportMetric(float64(metrics.success)/float64(b.N*2)*100, "success%")
 
 	// b.N*2 becuase we send 2 requests / benchmark
 	b.Logf("Total requests: %d, Success: %d, Failures: %d, Time: %v",
@@ -143,6 +143,9 @@ func worker(b *testing.B, tasks <-chan RequestTask, metrics *Metrics) {
 			}
 
 			req, err = http.NewRequest("POST", SERVER_URL+"/"+task.key, bytes.NewBuffer(jsonData))
+			if err != nil {
+				b.Fatal(err)
+			}
 			req.Header.Set("Content-Type", "application/json")
 
 		case GET:
