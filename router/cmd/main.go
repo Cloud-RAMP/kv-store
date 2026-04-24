@@ -15,7 +15,9 @@ func main() {
 
 	nodes, err := router.ParseNodes(os.Getenv("KV_NODES"))
 	if err != nil {
-		log.Fatalf("invalid KV_NODES: %v", err)
+		nodes = []string{
+			"http://localhost:3001", "http://localhost:3002", "http://localhost:3003",
+		}
 	}
 
 	if err := router.Start(addr, nodes); err != nil {

@@ -47,6 +47,7 @@ type Metrics struct {
 
 const SERVER_URL string = "http://localhost:3000"
 const NUM_WORKERS = 5
+const NUM_KEYS = 1000
 
 // BenchmarkKVStore benchmarks the KV store with multiple workers
 func BenchmarkKVStore(b *testing.B) {
@@ -67,8 +68,8 @@ func BenchmarkKVStore(b *testing.B) {
 	// looping over b.N becuase the benchmark automatically controls how many interations are done
 	startTime := time.Now()
 	for i := 0; i < b.N; i++ {
-		key := fmt.Sprintf("key-%d", i%100) // Cycle through 100 keys
-		value := fmt.Sprintf("value-%d", i%100)
+		key := fmt.Sprintf("key-%d", i%NUM_KEYS) // Cycle through NUM_KEYS keys
+		value := fmt.Sprintf("value-%d", i%NUM_KEYS)
 
 		// Create a SET task
 		tasks <- RequestTask{
@@ -95,8 +96,8 @@ func BenchmarkKVStore(b *testing.B) {
 	defer metrics.mu.Unlock()
 
 	b.ReportMetric(float64(metrics.success)/totalTime.Seconds(), "req/sec")
-	b.ReportMetric(float64(metrics.success)/float64(b.N)*100, "success%")
 	b.ReportMetric(float64(metrics.duration.Milliseconds())/float64(metrics.success), "ms/req")
+	b.ReportMetric(float64(metrics.success)/float64(b.N)*100, "success%")
 
 	// b.N*2 becuase we send 2 requests / benchmark
 	b.Logf("Total requests: %d, Success: %d, Failures: %d, Time: %v",
@@ -152,7 +153,6 @@ func worker(b *testing.B, tasks <-chan RequestTask, metrics *Metrics) {
 		resp, err := client.Do(req)
 		if err != nil {
 			b.Logf("Failed to send request: %v", err)
-			b.Logf("Key: %s", task.key)
 			metrics.mu.Lock()
 			metrics.failure++
 			metrics.mu.Unlock()
@@ -174,7 +174,7 @@ func worker(b *testing.B, tasks <-chan RequestTask, metrics *Metrics) {
 
 		// Check status code
 		if resp.StatusCode >= 400 {
-			b.Logf("Request failed: %s", resp.Status)
+			// b.Logf("Request failed: %s", resp.Status)
 			metrics.mu.Lock()
 			metrics.failure++
 			metrics.mu.Unlock()
