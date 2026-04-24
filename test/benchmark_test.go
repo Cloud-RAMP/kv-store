@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -45,7 +46,14 @@ type Metrics struct {
 	wg       sync.WaitGroup
 }
 
-const SERVER_URL string = "http://localhost:3000"
+var SERVER_URL = "http://localhost:3000"
+
+func init() {
+	if url := os.Getenv("URL"); url != "" {
+		SERVER_URL = url
+	}
+}
+
 const NUM_WORKERS = 5
 const NUM_KEYS = 1000
 
