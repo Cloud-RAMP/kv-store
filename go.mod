@@ -1,3 +1,3 @@
 module github.com/Cloud-RAMP/kv-store
 
-go 1.24
+go 1.24.0
